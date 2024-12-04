@@ -7,7 +7,6 @@
 #define SEALEVELPRESSURE_HPA (1020.0)
 
 Adafruit_BME280 bme; // I2C
-//Test sensitive data MySuperSecretPswd
 // Variable Declaration
 const char* ssid = "wifi_id";
 const char* password = "mypsww";
