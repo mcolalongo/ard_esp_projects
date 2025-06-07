@@ -7,8 +7,8 @@
 
 
 
-const char* ssid = "WiFI-ID";
-const char* password = "WIFI-PSSWD";
+const char* ssid = "wifiid";
+const char* password = "wifipsswd";
 const char* mqtt_server = "192.168.1.235";
 uint64_t time_ms = 60e6;
 //D1 mini in A0 has already voltage divider of 220k/ 100k but the ESP12F module does not!
@@ -39,7 +39,7 @@ void setup() {
     moisture = map(sensor_analog,540,1024,100,0);
     tmp = tmp + moisture;
   }
-  Serial.print(moisture/10);
+  Serial.print(tmp/10);
   Serial.println("%");
   Serial.println(sensor_analog);   
   
