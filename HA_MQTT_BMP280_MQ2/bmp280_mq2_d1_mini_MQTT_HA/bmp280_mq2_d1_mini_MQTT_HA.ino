@@ -8,10 +8,11 @@
 
 Adafruit_BME280 bme; // I2C
 // Variable Declaration
-const char* ssid = "wifiID";
-const char* password = "wifiPSSW";
+const char* ssid = "wifiid";
+const char* password = "wifipssw";
 // Add your MQTT Broker IP address, example:
 const char* mqtt_server = "192.168.1.235";
+const int BMPVCCPIN = 33;
 const int LEDPIN = 14; // LED pin
 const int GASPIN = 35; // ADC pin
 
@@ -26,8 +27,13 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(LEDPIN, OUTPUT);
   pinMode(GASPIN, INPUT);
+  // set output the GPIO 33 where the BMP gets is VCC
+  pinMode(BMPVCCPIN, OUTPUT);
+  // set HIGH to give 3.3V as VCC to the 3.3V sensor
+  digitalWrite(BMPVCCPIN, HIGH);
   Serial.begin(115200);
-
+  delay(2000); // wait two seconds to stabilize the connection
+  
   setup_wifi();
   // Connect to mqtt_server
   client.setServer(mqtt_server, 1883);
@@ -49,7 +55,6 @@ void setup() {
 
 void loop() { // Loop function of microcrontroller
   float gas = analogRead(GASPIN);
-  
   float h =  bme.readHumidity();
   float t = bme.readTemperature();
   float alt = bme.readAltitude(SEALEVELPRESSURE_HPA);
@@ -75,7 +80,7 @@ void loop() { // Loop function of microcrontroller
   client.loop(); // function needed to constantly run the MQTT broker
 
   client.publish("livingroom/bmp280sensor",  buffer);
-  delay(1000); 
+  delay(2000); 
 }
 
 
