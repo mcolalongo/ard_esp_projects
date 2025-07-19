@@ -4,12 +4,14 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 
+#define uS_TO_S_FACTOR 1000000ULL  // Conversion factor for micro seconds to seconds
+#define TIME_TO_SLEEP  1800 // seconds of sleep
 #define SEALEVELPRESSURE_HPA (1020.0)
 
 Adafruit_BME280 bme; // I2C
 // Variable Declaration
-const char* ssid = "FASTWEB-00A60B";
-const char* password = "T8MMPYWH6Z";
+const char* ssid = "wifiID";
+const char* password = "wifipssw";
 // Add your MQTT Broker IP address, example:
 const char* mqtt_server = "192.168.1.235";
 const int BMPVCCPIN = 33;
@@ -74,15 +76,26 @@ void loop() { // Loop function of microcrontroller
   serializeJson(doc, buffer); //needs the json doc + buffer which is a temporary string which prints like { "car" : toyota, "seats" : 5} etc
 
   // connect to MQTT broker
-  // connect to MQTT broker
   if (!client.connected()) {
     reconnect();
  
   }
-  client.loop(); // function needed to constantly run the MQTT broker
 
   client.publish("livingroom/bmp280sensor",  buffer);
-  delay(2000);
+  // delay(300000); // every 5 minutes, so that it has time not to overheat
+  //better If it goes to sleep
+  //here for ESP32 for some whatever reason, client.loop(). It workd only if I call client connected first. Then I need to give again connection and client loop.
+  // I personally didn't get. Seen this on github and it works
+  uint32_t loopStart = millis(); 
+  while (millis() - loopStart < 15000) { 
+    if (!client.connected()) { reconnect(); } 
+    else client.loop(); }
+  
+  
+  // client.loop(); // function needed to constantly run the MQTT broker
+  Serial.println("I am going to sleep!");
+  // esp_deep_sleep_start();
+  ESP.deepSleep(uS_TO_S_FACTOR * TIME_TO_SLEEP);
 
 }
 
