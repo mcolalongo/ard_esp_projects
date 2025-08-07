@@ -1,14 +1,14 @@
-// #include <WiFi.h>
-// #include <PubSubClient.h>
-// #include "ArduinoJson.h"
-// #include "DHT.h"
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include "ArduinoJson.h"
+#include "DHT.h"
 
 #define PINGATE 21
 #define LEDPIN 2
 
 
-const char* ssid = "WiFi_ID";
-const char* password = "WiFi_PSSWD";
+const char* ssid = "wifiid";
+const char* password = "wifipswwrd";
 const char* mqtt_server = "192.168.1.235";
 
 WiFiClient espClient;
@@ -18,6 +18,7 @@ PubSubClient client(espClient);
 
 void setup() {
   pinMode(LEDPIN, OUTPUT);
+  pinMode(PINGATE, OUTPUT);
   Serial.begin(115200);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
@@ -30,7 +31,7 @@ void loop() {
   if (!client.connected()) {
     reconnect();
   }
-  client.loop();
+  client.loop(); 
 }
 
 
@@ -66,7 +67,7 @@ void reconnect() {
     if (client.connect("ESP32DevBoard_clientID", "mqtt-user", "mqtt-password")) {
       Serial.println("connected");
       // Subscribe
-      client.subscribe("livingroom/waterpump");
+      client.subscribe("livingroom/waterpump/switch");
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
